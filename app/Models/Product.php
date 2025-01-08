@@ -5,16 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-class Delivery extends Model
+class Product extends Model
 {
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'price', 'description', 'price', 'image'];
 
     protected $keyType = 'string';
 
     protected static function booted(): void
     {
-        static::creating(function (Delivery $delivery) {
-            $delivery->id = Str::uuid();
+        static::creating(function (Product $product) {
+            $product->id = Str::uuid();
         });
     }
 }
