@@ -6,9 +6,13 @@ use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers;
 use App\Models\Product;
 use Filament\Forms;
+use Filament\Forms\Components\Card;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -19,31 +23,62 @@ class ProductResource extends Resource
 
     protected static ?string $navigationGroup = 'Master Data';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->label('Nama Produk')
-                    ->required()
-                    ->unique(ignorable: fn($record) => $record),
-                Forms\Components\Textarea::make('description')
-                    ->label('Deskripsi')
-                    ->required(),
-                Forms\Components\TextInput::make('price')
-                    ->label('Harga')
-                    ->numeric()
-                    ->required(),
-                Forms\Components\FileUpload::make('image')
-                    ->label('Gambar')
-                    ->directory('products')
-                    ->image()
-                    ->required(),
-                Forms\Components\Toggle::make('is_active')
-                    ->label('Aktif')
-                    ->default(true),
+                Forms\Components\Card::make()->schema([
+                    Grid::make(3)->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->label('Nama Produk')
+                            ->required()
+                            ->unique(ignorable: fn($record) => $record),
+
+                        Forms\Components\TextInput::make('price')
+                            ->label('Harga')
+                            ->numeric()
+                            ->required(),
+                        Forms\Components\Toggle::make('is_active')
+                            ->label('Produk Aktif')
+                            ->inline(false)
+                            ->default(true),
+                    ])
+                    ,
+                    RichEditor::make('description')->toolbarButtons([
+                        'blockquote',
+                        'bold',
+                        'bulletList',
+                        'h2',
+                        'h3',
+                        'italic',
+                        'orderedList',
+                        'redo',
+                        'strike',
+                        'underline',
+                        'undo',
+                    ]),
+                    Forms\Components\Repeater::make('catalogImages')
+                        ->grid([
+                            "xl" => 2,
+                            "lg" => 2,
+                            "md" => 2,
+                            "sm" => 1,
+                            "xs" => 1,
+                        ])
+                        ->label('Gambar Produk')
+                        ->relationship('catalogImages')
+                        ->schema([
+                            Forms\Components\FileUpload::make('image')
+                                ->label('Gambar')
+                                ->directory('products')
+                                ->image()
+                                ->required(),
+                        ])
+                        ->minItems(1)
+                        ->createItemButtonLabel('Tambah Gambar'),
+                ])
             ]);
     }
 
@@ -54,23 +89,29 @@ class ProductResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nama Produk')
-                    ->searchable() // Bisa dicari
-                    ->sortable(), // Bisa diurutkan
-                Tables\Columns\TextColumn::make('description')
-                    ->label('Deskripsi')
-                    ->limit(50), // Batasi jumlah karakter yang ditampilkan
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('price')
                     ->label('Harga')
-                    ->money('IDR', true) // Format mata uang
+                    ->money('IDR', true)
                     ->sortable(),
-                Tables\Columns\ImageColumn::make('image')
-                    ->label('Gambar'),
-                Tables\Columns\BooleanColumn::make('is_active')
-                    ->label('Aktif'),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('Dibuat Pada')
-                    ->dateTime(),
+                Tables\Columns\ToggleColumn::make('is_active')->label('Status'),
             ])
+            ->filters(
+                [
+                    Tables\Filters\SelectFilter::make('is_active')
+                        ->label('Status')
+                        ->options([
+                            1 => 'Active',
+                            0 => 'Inactive',
+                        ]),
+                        SelectFilter::make('category')
+                        ->label('Category')
+                        ->options(
+                            ['product' => 'Product', 'packaging' => 'Packing']
+                        )
+                ]
+            )
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])

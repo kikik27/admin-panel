@@ -9,7 +9,7 @@ class Delivery extends Model
 {
     protected $fillable = ['name'];
 
-    protected $keyType = 'string';
+    public $keyType = 'string';
 
     protected static function booted(): void
     {

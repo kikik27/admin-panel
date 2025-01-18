@@ -18,7 +18,7 @@ class DeliveryResource extends Resource
     protected static ?string $model = Delivery::class;
 
     protected static ?string $navigationGroup = 'Master Data';
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-truck';
 
     public static function form(Form $form): Form
     {
@@ -33,11 +33,16 @@ class DeliveryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->label('Nama'),
+                Tables\Columns\TextColumn::make('name')->label('Nama')->searchable()->sortable(),
                 Tables\Columns\ToggleColumn::make('is_active')->label('Status'),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('is_active')
+                    ->label('Status')
+                    ->options([
+                        1 => 'Active',
+                        0 => 'Inactive',
+                    ])
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -52,7 +57,7 @@ class DeliveryResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+
         ];
     }
 

@@ -8,14 +8,18 @@ return new class extends Migration {
     /**
      * Run the migrations.
      */
+
     public function up(): void
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('customer_id')->references('id')->on('customers')->onUpdate('cascade')->onDelete('cascade');
+            $table->string('transaction_code');
+            $table->string('customer');
+            $table->string('address');
+            $table->string('phone');
             $table->foreignUuid('delivery_id')->references('id')->on('deliveries')->onUpdate('cascade')->onDelete('cascade');
-            $table->float('amount');
-            $table->enum('status', ['on_delivery', 'complete', 'cancled'])->default('on_delivery');
+            $table->float('delivery_fee')->nullable();
+            $table->enum('status', ['process', 'on_delivery', 'complete', 'cancled'])->default('process');
             $table->timestamps();
         });
     }

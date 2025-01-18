@@ -6,10 +6,13 @@ use App\Filament\Resources\TransactionResource\Pages;
 use App\Filament\Resources\TransactionResource\RelationManagers;
 use App\Models\Transaction;
 use Filament\Forms;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -26,40 +29,42 @@ class TransactionResource extends Resource
     {
         return $form
             ->schema([
-                Section::make()->columns([
-                    'sm' => 1,
-                    'xl' => 3,
-                    '2xl' => 3,
-                ])->schema([
-                            Forms\Components\Select::make('customer_id')
-                                ->relationship('customer', 'name')
-                                ->label('Customer')
-                                ->required(),
-                            Forms\Components\Select::make('delivery_id')
-                                ->relationship('delivery', 'name')
-                                ->label('Delivery')
-                                ->required(),
-                            Forms\Components\TextInput::make('amount')
-                                ->label('Total Amount')
-                                ->numeric()
-                                ->readOnly(),
-                        ]),
+                Forms\Components\Card::make()->schema([
 
-                Forms\Components\Repeater::make('transactionDetails')
-                    ->relationship('TransactionDetails')
-                    ->schema([
-                        Forms\Components\Select::make('product_id')
-                            ->relationship('product', 'name')
-                            ->label('Product')
-                            ->required(),
-                        Forms\Components\TextInput::make('qty')
-                            ->label('Quantity')
+                    Grid::make('3')->schema([
+                        TextInput::make('transaction_code'),
+                        TextInput::make('customer'),
+                        TextInput::make('address'),
+                        TextInput::make('phone'),
+                        TextInput::make('status'),
+                        TextInput::make('amount'),
+                        Forms\Components\Select::make('delivery_id')
+                            ->relationship('delivery', 'name')
+                            ->label('Delivery')
+                            ->disabled(),
+                        Forms\Components\TextInput::make('amount')
+                            ->label('Total Amount')
                             ->numeric()
-                            ->required(),
+                            ->disabled(),
+                    ]),
+                    Grid::make('3')->schema([
+                        Forms\Components\Repeater::make('transactionDetails')
+                            ->relationship('TransactionDetails')
+                            ->schema([
+                                Forms\Components\Select::make('products_id')
+                                    ->relationship('product', 'name')
+                                    ->label('Product')
+                                    ->required(),
+                                Forms\Components\TextInput::make('qty')
+                                    ->label('Quantity')
+                                    ->numeric()
+                                    ->required(),
+                            ])
+                            ->label('Transaction Details')
+                            ->createItemButtonLabel('Add Product')
+                            ->disabled(),
                     ])
-                    ->label('Transaction Details')
-                    ->createItemButtonLabel('Add Product')
-                    ->required(),
+                ])
             ]);
     }
 
@@ -67,11 +72,9 @@ class TransactionResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')
-                    ->label('Transaction ID')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('customer.name')
-                    ->label('Customer'),
+                Tables\Columns\TextColumn::make('transaction_code')
+                    ->label('Transaction Code')
+                    ->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('delivery.name')
                     ->label('Delivery'),
                 Tables\Columns\TextColumn::make('amount')
@@ -80,7 +83,7 @@ class TransactionResource extends Resource
                 Tables\Columns\BadgeColumn::make('status')
                     ->label('Status')
                     ->colors([
-                        'primary' => 'on_delivery',
+                        'warning' => 'on_delivery',
                         'success' => 'complete',
                         'danger' => 'cancled',
                     ])
@@ -93,6 +96,11 @@ class TransactionResource extends Resource
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Created At')
                     ->dateTime(),
+            ])
+            ->filters([
+                SelectFilter::make('status')->label('Transaction Status')->options([
+
+                ]),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

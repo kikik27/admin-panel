@@ -14,4 +14,19 @@ class CreateProduct extends CreateRecord
     {
         return $this->getResource()::getUrl('index');
     }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $productName = $data['name'];
+        $words = explode(' ', $productName);
+        $initials = '';
+
+        foreach ($words as $word) {
+            $initials .= strtoupper($word[0]);
+        }
+
+        $data['product_code'] = $initials;
+
+        return $data;
+    }
 }
