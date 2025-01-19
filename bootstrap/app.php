@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\DecryptApiRequest;
 use App\Http\Middleware\EncryptApiResponse;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -13,7 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->use([EncryptApiResponse::class]);
+        $middleware->use([
+            EncryptApiResponse::class,
+            DecryptApiRequest::class
+        ]);
         //
     })
     ->withExceptions(function (Exceptions $exceptions) {
