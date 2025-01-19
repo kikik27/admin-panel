@@ -21,7 +21,7 @@ Route::group([
 });
 
 Route::group(['middleware' => [EncryptApiResponse::class, DecryptApiRequest::class]], function ($router) {
-    Route::get('/deliveries', [DeliveryController::class, 'index']);
-    Route::get('/products', [ProductController::class, 'index']);
-    Route::post('/transaction', [TransactionController::class, 'store']);
+    Route::get('/deliveries', [DeliveryController::class, 'index'])->middleware(EncryptApiResponse::class);
+    Route::get('/products', [ProductController::class, 'index'])->middleware(EncryptApiResponse::class);
+    Route::post('/transaction', [TransactionController::class, 'store'])->middleware(DecryptApiRequest::class);
 });
