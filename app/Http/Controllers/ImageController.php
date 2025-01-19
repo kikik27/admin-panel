@@ -8,7 +8,7 @@ class ImageController extends Controller
 {
     public function streamImage($filename)
     {
-        $path = storage_path('app/public/' . $filename);
+        $path = storage_path('app/public/products/' . $filename);
 
         if (!file_exists($path)) {
             abort(404, 'Image not found.');
