@@ -4,7 +4,6 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DeliveryController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\TransactionController;
-use App\Http\Middleware\EncryptApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +18,8 @@ Route::group([
     Route::post('/me', [AuthController::class, 'me'])->middleware('auth:api')->name('me');
 });
 
-Route::get('/deliveries', [DeliveryController::class,'index']);
-Route::get('/products', [ProductController::class, 'index'])->middleware(EncryptApiResponse::class);
-Route::post('/transaction', [TransactionController::class, 'store']);
+Route::group(['middleware' => [EncryptApiResponse::class, DecryptApiRequest::class]], function ($router) {
+    Route::get('/deliveries', [DeliveryController::class, 'index']);
+    Route::get('/products', [ProductController::class, 'index']);
+    Route::post('/transaction', [TransactionController::class, 'store']);
+});
