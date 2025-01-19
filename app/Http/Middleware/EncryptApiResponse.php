@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Helpers\EncryptionHelper;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class EncryptApiResponse
@@ -18,14 +19,17 @@ class EncryptApiResponse
     {
         $response = $next($request);
 
-        // Hanya mengenkripsi jika respons berupa JsonResponse
         if ($response instanceof JsonResponse) {
-            $data = $response->getData(true); // Ambil data JSON
-            $encryptedData = EncryptionHelper::encrypt($data);
+            $data = $response->getData(true);
 
-            return response()->json([
-                'encrypted' => $encryptedData,
-            ]);
+            // Jangan enkripsi jika response sudah mengandung key 'encrypted'
+            if (!isset($data['encrypted'])) {
+                $encryptedData = EncryptionHelper::encrypt($data);
+
+                return new JsonResponse([
+                    'encrypted' => $encryptedData,
+                ], $response->status());
+            }
         }
 
         return $response;
