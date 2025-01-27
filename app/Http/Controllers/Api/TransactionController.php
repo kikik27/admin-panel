@@ -58,7 +58,7 @@ class TransactionController extends Controller
                 TransactionDetail::create([
                     'id' => Str::uuid(),
                     'transaction_id' => $transaction->id,
-                    'products_id' => $product->id,
+                    'product_id' => $product->id,
                     'qty' => $detail['qty'],
                     'amount' => $detailAmount,
                 ]);

@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('transaction_details', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('transaction_id')->references('id')->on('transactions')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignUuid('products_id')->references('id')->on('products')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignUuid('product_id')->references('id')->on('products')->onDelete('cascade')->onUpdate('cascade');
             $table->float('qty');
             $table->float('amount');
             $table->timestamps();

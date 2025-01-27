@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 
 class TransactionDetail extends Model
 {
-    protected $fillable = ['transaction_id', 'products_id', 'qty', 'amount'];
+    protected $fillable = ['transaction_id', 'product_id', 'qty', 'amount'];
     public $keyType = 'string';
     public $incrementing = false;
 

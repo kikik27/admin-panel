@@ -6,6 +6,7 @@ use App\Filament\Resources\DeliveryResource\Pages;
 use App\Filament\Resources\DeliveryResource\RelationManagers;
 use App\Models\Delivery;
 use Filament\Forms;
+use Filament\Forms\Components\Card;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -24,8 +25,10 @@ class DeliveryResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make("name")->required()->unique("deliveries"),
-                Forms\Components\Toggle::make("is_active")->required()->default(true),
+                Card::make()->schema([
+
+                    Forms\Components\TextInput::make("name")->required()->unique("deliveries")
+                ])
             ]);
     }
 

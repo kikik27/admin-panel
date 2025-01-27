@@ -30,7 +30,7 @@ class ProductResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Card::make()->schema([
-                    Grid::make(3)->schema([
+                    Grid::make(2)->schema([
                         Forms\Components\TextInput::make('name')
                             ->label('Nama Produk')
                             ->required()
@@ -40,10 +40,7 @@ class ProductResource extends Resource
                             ->label('Harga')
                             ->numeric()
                             ->required(),
-                        Forms\Components\Toggle::make('is_active')
-                            ->label('Produk Aktif')
-                            ->inline(false)
-                            ->default(true),
+
                     ])
                     ,
                     RichEditor::make('description')->toolbarButtons([
@@ -105,7 +102,7 @@ class ProductResource extends Resource
                             1 => 'Active',
                             0 => 'Inactive',
                         ]),
-                        SelectFilter::make('category')
+                    SelectFilter::make('category')
                         ->label('Category')
                         ->options(
                             ['product' => 'Product', 'packaging' => 'Packing']
