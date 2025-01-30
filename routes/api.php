@@ -20,11 +20,11 @@ Route::group([
     Route::post('/me', [AuthController::class, 'me'])->middleware('auth:api')->name('me');
 });
 
-Route::group(
-    // ['middleware' => [EncryptApiResponse::class, DecryptApiRequest::class]],
-    function ($router) {
+// Route::group(
+//     ['middleware' => [EncryptApiResponse::class, DecryptApiRequest::class]],
+//     function ($router) {
         Route::get('/deliveries', [DeliveryController::class, 'index']);
         Route::get('/products', [ProductController::class, 'index']);
         Route::post('/transaction', [TransactionController::class, 'store']);
-    }
-);
+//     }
+// );
