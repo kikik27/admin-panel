@@ -14,7 +14,7 @@ class EncryptionHelper
      */
     public static function encrypt($data)
     {
-        return base64_encode(Crypt::encryptString(json_encode($data)));
+        return Crypt::encryptString(json_encode($data));
     }
 
     /**
@@ -25,6 +25,6 @@ class EncryptionHelper
      */
     public static function decrypt($encryptedData)
     {
-        return json_decode(Crypt::decryptString(base64_decode($encryptedData)), true);
+        return json_decode(Crypt::decryptString($encryptedData), true);
     }
 }
