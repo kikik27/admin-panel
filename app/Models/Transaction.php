@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 
 class Transaction extends Model
 {
-    protected $fillable = ['customer', 'address', 'phone','delivery_id', 'transaction_code'];
+    protected $fillable = ['customer', 'address', 'phone','delivery_id', 'transaction_code', 'status', 'delivery_fee',];
     public $keyType = 'string';
     protected $appends = ['amount'];
     public $incrementing = false;
@@ -50,6 +50,7 @@ class Transaction extends Model
 
     public function getAmountAttribute()
     {
-        return $this->TransactionDetails->sum('amount');
+        return $this->TransactionDetails->sum('amount') + $this->delivery_fee;
     }
+
 }

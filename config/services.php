@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'wa' => [
+        'url' => env('WA_API', 'http://localhost:3000/api/v1/devices/send-media'),
+        'key' => env('WA_KEY'),
+    ],
+
 ];

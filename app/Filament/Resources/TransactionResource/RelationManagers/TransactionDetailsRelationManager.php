@@ -35,6 +35,10 @@ class TransactionDetailsRelationManager extends RelationManager
                     ->searchable()
                     ->label("Product Name")
                     ->sortable(),
+                Tables\Columns\TextColumn::make("product.price")
+                    ->searchable()
+                    ->label("Price")
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('qty')
                     ->searchable()
                     ->label("Quantity")
