@@ -38,6 +38,7 @@ return [
     'wa' => [
         'url' => env('WA_API', 'http://localhost:3000/api/v1/devices/send-media'),
         'key' => env('WA_KEY'),
+        'device' => env('WA_DEVICE', 'de4d7619-7821-4544-835a-e536572e200e')
     ],
 
 ];

@@ -57,6 +57,7 @@ class ViewTransaction extends ViewRecord
         try {
             $url = config('services.wa.url');
             $apiKey = config('services.wa.key');
+            $deviceId = config('services.wa.device');
 
             $fullPath = storage_path('app/private/' . $pdfPath);
 
@@ -79,7 +80,7 @@ class ViewTransaction extends ViewRecord
                 )->post($url, [
                         'caption' => $caption,
                         'target' => $record->phone. "@c.us",
-                        'deviceId' => "cb6f2f9f-245b-4c6e-acb1-ebd1fd490aae"
+                        'deviceId' => $deviceId
                     ]);
 
             if ($response->successful()) {
