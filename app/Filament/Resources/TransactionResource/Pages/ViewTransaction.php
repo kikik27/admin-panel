@@ -57,6 +57,7 @@ class ViewTransaction extends ViewRecord
         try {
             $url = config('services.wa.url');
             $apiKey = config('services.wa.key');
+            $deviceId = config('services.wa.device');
 
             $fullPath = storage_path('app/private/' . $pdfPath);
 
