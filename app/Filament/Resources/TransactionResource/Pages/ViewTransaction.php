@@ -40,7 +40,7 @@ class ViewTransaction extends ViewRecord
                         Storage::put($pdfPath, $pdf->output());
 
                         // Send to API
-                        $this->sendMediaToAPI($record, $pdfPath);
+                        // $this->sendMediaToAPI($record, $pdfPath);
                     } catch (\Exception $e) {
                         Notification::make()
                             ->title('Error')
@@ -67,7 +67,7 @@ class ViewTransaction extends ViewRecord
             $caption = "Pesanan Anda telah kami proses. Terima kasih telah melakukan pemesanan dengan nomor invoice {$record->transaction_code}.\n\n";
             $caption .= "Mohon segera lakukan pembayaran sesuai dengan invoice yang terlampir.\n";
             $caption .= "Jika sudah melakukan pembayaran, mohon konfirmasi dengan mengirimkan bukti transfer.";
-            
+
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $apiKey,
                 'X-API-KEY' => $apiKey,
@@ -78,7 +78,7 @@ class ViewTransaction extends ViewRecord
                     $record->transaction_code . '.pdf'
                 )->post($url, [
                         'caption' => $caption,
-                        'target' => $record->phone. "@c.us",
+                        'target' => $record->phone . "@c.us",
                         'deviceId' => "cb6f2f9f-245b-4c6e-acb1-ebd1fd490aae"
                     ]);
 

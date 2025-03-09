@@ -17,21 +17,25 @@ class EncryptApiResponse
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $response = $next($request);
+        if ($request->isMethod('GET')) {
+            $response = $next($request);
 
-        if ($response instanceof JsonResponse) {
-            $data = $response->getData(true);
+            if ($response instanceof JsonResponse) {
+                $data = $response->getData(true);
 
-            // Jangan enkripsi jika response sudah mengandung key 'encrypted'
-            if (!isset($data['encrypted'])) {
-                $encryptedData = EncryptionHelper::encrypt($data);
+                // Jangan enkripsi jika response sudah mengandung key 'encrypted'
+                if (!isset($data['encrypted'])) {
+                    $encryptedData = EncryptionHelper::encrypt($data);
 
-                return new JsonResponse([
-                    'encrypted' => $encryptedData,
-                ], $response->status());
+                    return new JsonResponse([
+                        'encrypted' => $encryptedData,
+                    ], $response->status());
+                }
             }
         }
 
-        return $response;
+        return $next($request);
     }
+
+
 }

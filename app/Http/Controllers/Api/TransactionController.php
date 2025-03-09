@@ -27,7 +27,7 @@ class TransactionController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 422);
+            return response()->json($validator->errors()->toJson(), 400);
         }
         DB::beginTransaction();
 

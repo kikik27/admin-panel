@@ -30,7 +30,7 @@ class ProductResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Card::make()->schema([
-                    Grid::make(2)->schema([
+                    Grid::make(3)->schema([
                         Forms\Components\TextInput::make('name')
                             ->label('Nama Produk')
                             ->required()
@@ -40,7 +40,13 @@ class ProductResource extends Resource
                             ->label('Harga')
                             ->numeric()
                             ->required(),
-
+                        Forms\Components\Select::make('category')
+                            ->label('Kategori')
+                            ->required()
+                            ->default('product')
+                            ->options(
+                                ['product' => 'Product', 'packaging' => 'Packing']
+                            ),
                     ])
                     ,
                     RichEditor::make('description')->toolbarButtons([
@@ -70,10 +76,8 @@ class ProductResource extends Resource
                             Forms\Components\FileUpload::make('image')
                                 ->label('Gambar')
                                 ->directory('products')
-                                ->image()
-                                ->required(),
                         ])
-                        ->minItems(1)
+                        ->minItems(0)
                         ->createItemButtonLabel('Tambah Gambar'),
                 ])
             ]);
