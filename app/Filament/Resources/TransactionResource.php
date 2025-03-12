@@ -141,14 +141,11 @@ class TransactionResource extends Resource
                 Tables\Actions\Action::make('Invoice')->icon('heroicon-c-printer')->visible(fn(Transaction $record) => $record->status != 'process')
                     ->action(
                         function (Transaction $record) {
-                            $record->with(['TransactionDetails', 'TransactionDetails.Product'])->first();
-                            echo Blade::render('invoice', ['transaction' => $record, 'items']);
-                            return ;
-                            // return response()->streamDownload(function () use ($record) {
-                            //     echo Pdf::loadHtml(
-                            //         Blade::render('invoice', ['transaction' => $record])
-                            //     )->stream();
-                            // }, 'C&J-Invoice-' . $record->transaction_code . '.pdf');
+                            return response()->streamDownload(function () use ($record) {
+                                echo Pdf::loadHtml(
+                                    Blade::render('invoice', ['transaction' => $record])
+                                )->stream();
+                            }, 'C&J-Invoice-' . $record->transaction_code . '.pdf');
 
                         }
                     ),
