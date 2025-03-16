@@ -11,9 +11,9 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $category = $request->query('category');
-        $limit = $request->query('limit') || 10;
-        $search = $request->query('name');
+        $category = $request->get('category');
+        $limit = $request->get('limit') || 10;
+        $search = $request->get('name');
         $bestSeller = $request->query('best_seller');
 
         $productsQuery = Product::query()
