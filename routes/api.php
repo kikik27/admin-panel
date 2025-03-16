@@ -25,6 +25,7 @@ Route::group([
 //     function ($router) {
         Route::get('/deliveries', [DeliveryController::class, 'index']);
         Route::get('/products', [ProductController::class, 'index']);
+        Route::get('/products/detail/{id}', [ProductController::class, 'detail']);
         Route::post('/transaction', [TransactionController::class, 'store']);
 //     }
 // );
