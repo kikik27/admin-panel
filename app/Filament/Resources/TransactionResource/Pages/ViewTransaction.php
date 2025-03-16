@@ -23,24 +23,29 @@ class ViewTransaction extends ViewRecord
                 ->icon('heroicon-c-printer')
                 ->action(function (Transaction $record) {
                     try {
-                        // Generate PDF invoice
-                        $pdf = Pdf::loadHtml(
-                            Blade::render('invoice', ['transaction' => $record])
-                        );
+                        return response()->streamDownload(function () use ($record) {
+                            echo Pdf::loadHtml(
+                                Blade::render('invoice', ['transaction' => $record])
+                            )->stream();
+                        }, 'C&J-Invoice-' . $record->transaction_code . '.pdf');
+                        // // Generate PDF invoice
+                        // $pdf = Pdf::loadHtml(
+                        //     Blade::render('invoice', ['transaction' => $record])
+                        // );
 
-                        // Create directory if it doesn't exist
-                        $directory = storage_path('app/private/invoices');
-                        if (!file_exists($directory)) {
-                            mkdir($directory, 0755, true);
-                        }
+                        // // Create directory if it doesn't exist
+                        // $directory = storage_path('app/private/invoices');
+                        // if (!file_exists($directory)) {
+                        //     mkdir($directory, 0755, true);
+                        // }
 
-                        // Save PDF to storage with proper path
-                        $pdfFileName = $record->transaction_code . '.pdf';
-                        $pdfPath = 'invoices/' . $pdfFileName;
-                        Storage::put($pdfPath, $pdf->output());
+                        // // Save PDF to storage with proper path
+                        // $pdfFileName = $record->transaction_code . '.pdf';
+                        // $pdfPath = 'invoices/' . $pdfFileName;
+                        // Storage::put($pdfPath, $pdf->output());
 
-                        // Send to API
-                        // $this->sendMediaToAPI($record, $pdfPath);
+                        // // Send to API
+                        // // $this->sendMediaToAPI($record, $pdfPath);
                     } catch (\Exception $e) {
                         Notification::make()
                             ->title('Error')
