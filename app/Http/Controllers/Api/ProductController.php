@@ -12,7 +12,7 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $category = $request->query('category');
-        $limit = $request->query('limit');
+        $limit = $request->query('limit') || 10;
         $search = $request->query('name');
         $bestSeller = $request->query('best_seller');
 
@@ -42,7 +42,7 @@ class ProductController extends Controller
         }
 
         // Paginate results
-        $products = $productsQuery->paginate($limit || 10);
+        $products = $productsQuery->paginate($limit);
 
         return response()->json([
             'message' => 'Products retrieved successfully.',
