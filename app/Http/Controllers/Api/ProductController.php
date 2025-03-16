@@ -35,8 +35,8 @@ class ProductController extends Controller
             $productsQuery->addSelect([
                 'sales_count' => DB::table('transaction_details')
                     ->selectRaw('SUM(qty)')
-                    ->whereColumn('products_id', 'products.id')
-                    ->groupBy('products_id'),
+                    ->whereColumn('product_id', 'products.id')
+                    ->groupBy('product_id'),
             ])
                 ->orderByDesc('sales_count');
         }
