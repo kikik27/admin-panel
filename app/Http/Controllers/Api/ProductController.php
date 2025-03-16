@@ -46,13 +46,7 @@ class ProductController extends Controller
 
         return response()->json([
             'message' => 'Products retrieved successfully.',
-            'data' => $products,
-            'params' => [
-                'category' => $category,
-                'limit' => $limit,
-                'search' => $search,
-                'best_seller' => $bestSeller,
-            ]
+            'data' => $products
         ]);
     }
 }
