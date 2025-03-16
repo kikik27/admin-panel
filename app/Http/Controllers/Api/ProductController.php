@@ -12,7 +12,7 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $category = $request->query('category');
-        $limit = $request->has('limit')
+        $limit = $request->has('limit');
         $search = $request->query('name');
         $bestSeller = $request->query('best_seller');
 
