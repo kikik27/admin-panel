@@ -12,8 +12,8 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $category = $request->get('category');
-        $limit = $request->get('limit') || 10;
-        $search = $request->get('name');
+        $limit = $request->get('limit');
+        $search = $request->query('name');
         $bestSeller = $request->query('best_seller');
 
         $productsQuery = Product::query()
@@ -27,7 +27,7 @@ class ProductController extends Controller
 
         // Search by name
         if ($search) {
-            $productsQuery->where('name', 'like', '%' . $search . '%');
+            $productsQuery->where('name', 'like', "%{$search}%");
         }
 
         // Filter by best sellers
