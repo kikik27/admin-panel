@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
-class catalogue extends Model
+use Illuminate\Support\Facades\Storage; // untuk menggunakan Storage::url()
+
+class Catalogue extends Model
 {
     protected $fillable = ['product_id', 'image'];
 
@@ -16,7 +18,7 @@ class catalogue extends Model
 
     protected static function booted(): void
     {
-        static::creating(callback: function (catalogue $catalogue) {
+        static::creating(function (Catalogue $catalogue) {
             $catalogue->id = Str::uuid();
         });
     }
@@ -25,4 +27,13 @@ class catalogue extends Model
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
+
+    // Accessor for full image URL
+    public function getImageUrlAttribute()
+    {
+        return $this->image ? url('storage/'.$this->image) : null;
+    }
+
+    // Pastikan image_url bisa di-akses saat model di-serialize
+    protected $appends = ['image_url'];
 }

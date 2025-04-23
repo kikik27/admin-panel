@@ -89,7 +89,7 @@ class ProductResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama Produk')
+                    ->label('Nama Produk APOALAH')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('price')
