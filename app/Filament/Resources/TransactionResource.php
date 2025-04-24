@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TransactionResource\Pages;
 use App\Filament\Resources\TransactionResource\RelationManagers;
+use App\Filament\Resources\TransactionResource\Widgets\TransactionCount;
 use App\Models\Transaction;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Forms;
@@ -18,6 +19,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Storage;
+use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Filters\Filter;
 
 class TransactionResource extends Resource
 {
@@ -97,17 +100,39 @@ class TransactionResource extends Resource
                     ->dateTime(),
             ])
             ->filters([
-                SelectFilter::make('status')->label('Transaction Status')->options([
-
-                ]),
-            ])
-            ->actions([
-
-                Tables\Actions\Action::make('Confirm')
-                    ->visible(fn(Transaction $record) => $record->status === 'process')
-                    ->label('Confirm Transaction')
-                    ->icon('heroicon-m-check-circle')
+                SelectFilter::make('status')
+                    ->label('Transaction Status')
+                    ->options([
+                        'process' => 'Process',
+                        'on_delivery' => 'On Delivery',
+                        'complete' => 'Complete',
+                        'cancled' => 'Canceled',
+                    ]),
+                SelectFilter::make('delivery.name')
+                    ->label('Delivery')
+                    ->relationship('delivery', 'name')
+                    ->multiple()
+                    ->relationship('delivery', 'name')
+                    ->placeholder('Select Delivery'),
+                Filter::make('created_at')
+                    ->label('Tanggal Transaksi')
                     ->form([
+                        DatePicker::make('from')->label('Start'),
+                        DatePicker::make('until')->label('End'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when($data['from'], fn($q) => $q->whereDate('created_at', '>=', $data['from']))
+                            ->when($data['until'], fn($q) => $q->whereDate('created_at', '<=', $data['until']));
+                    }),
+                ])
+            ->actions([
+                
+                Tables\Actions\Action::make('Confirm')
+                ->visible(fn(Transaction $record) => $record->status === 'process')
+                ->label('Confirm')
+                ->icon('heroicon-m-check-circle')
+                ->form([
                         Forms\Components\TextInput::make('delivery_fee')
                             ->label('Delivery Fee')
                             ->numeric()
@@ -124,41 +149,56 @@ class TransactionResource extends Resource
                             ->send();
                     }),
                 Tables\Actions\Action::make('Complete')
-                    ->label('Transaction Complete')
+                ->label('Complete')
+                ->color('success')
                     ->icon('heroicon-m-check-circle')
                     ->visible(fn(Transaction $record) => $record->status === 'on_delivery') // Hanya muncul jika status 'on_delivery'
                     ->requiresConfirmation() // Konfirmasi sebelum mengubah status
                     ->action(function (Transaction $record) {
                         $record->update(['status' => 'complete']);
-
+                        
                         Notification::make()
                             ->title('Transaction ' . $record->transaction_code)
                             ->body("Status changed to Complete")
                             ->success()
                             ->send();
                     }),
-
+                    
                 Tables\Actions\Action::make('Invoice')->icon('heroicon-c-printer')->visible(fn(Transaction $record) => $record->status != 'process')
-                    ->action(
+                ->action(
                         function (Transaction $record) {
                             return response()->streamDownload(function () use ($record) {
                                 echo Pdf::loadHtml(
                                     Blade::render('invoice', ['transaction' => $record])
-                                )->stream();
-                            }, 'C&J-Invoice-' . $record->transaction_code . '.pdf');
-
-                        }
-                    ),
+                                    )->stream();
+                                }, 'C&J-Invoice-' . $record->transaction_code . '.pdf');
+                                
+                            }
+                        ),
+                        Tables\Actions\Action::make('Cancel')
+                            ->label('Cancel')
+                            ->icon('heroicon-m-x-circle')
+                            ->color('danger')
+                            ->requiresConfirmation()
+                            ->action(function (Transaction $record) {
+                                $record->update(['status' => 'cancled']);
+                
+                                Notification::make()
+                                    ->title('Transaction ' . $record->transaction_code)
+                                    ->body("Status changed to Canceled")
+                                    ->success()
+                                    ->send();
+                            })->visible(fn(Transaction $record) => $record->status != 'cancled' && $record->status != 'complete' && $record->status != 'on_delivery'),
                 // Tables\Actions\ViewAction::make(),
-            ])
+                ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
+        }
+        
+        public static function getRelations(): array
+        {
+            return [
             RelationManagers\TransactionDetailsRelationManager::class,
         ];
     }
@@ -171,10 +211,16 @@ class TransactionResource extends Resource
         ];
     }
 
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            TransactionCount::class,
+        ];
+    }
+
     public static function getTableActions(): array
     {
         return [
-            Tables\Actions\ViewAction::make(),
             Tables\Actions\Action::make('process')
                 ->label('Process Transaction')
                 ->color('primary')
@@ -204,6 +250,13 @@ class TransactionResource extends Resource
                     }
                 })
                 ->visible(fn(Transaction $record) => $record->status === 'process')
+        ];
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            TransactionCount::class,
         ];
     }
 }

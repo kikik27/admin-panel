@@ -22,7 +22,7 @@ class TransactionController extends Controller
             'phone' => 'required|string',
             'delivery_id' => 'required|uuid|exists:deliveries,id',
             'products' => 'required|array',
-            'products.*.product_id' => 'required|uuid|exists:products,id',
+            'products.*.id' => 'required|uuid|exists:products,id',
             'products.*.qty' => 'required|numeric|min:1',
         ]);
 
@@ -45,7 +45,7 @@ class TransactionController extends Controller
                 'status' => 'process',
             ]);
             foreach ($request->products as $detail) {
-                $product = Product::find($detail['product_id']);
+                $product = Product::find($detail['id']);
 
                 if (!$product->is_active) {
                     throw ValidationException::withMessages([
